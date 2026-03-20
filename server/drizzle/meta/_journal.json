@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1773913974698,
+      "tag": "0000_real_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773916702745,
+      "tag": "0001_wide_sharon_ventura",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773919278476,
+      "tag": "0002_magenta_iron_patriot",
+      "breakpoints": true
+    }
+  ]
+}
