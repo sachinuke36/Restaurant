@@ -16,6 +16,6 @@ app.use(cors({ origin: "*" }));
 
 app.use("/api/users", userRoutes);
 
-app.listen(PORT, () => {
-  log.info(`Server is running on port ${PORT}`);
+app.listen(3000, "0.0.0.0", () => {
+  console.log("Server running on port 3000");
 });
