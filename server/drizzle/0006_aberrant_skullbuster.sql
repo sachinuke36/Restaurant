@@ -1,0 +1,1 @@
+ALTER TABLE "restaurants" ADD COLUMN "public_id" varchar(255);

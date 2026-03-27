@@ -1,0 +1,116 @@
+import { View, Text, TextInput, TouchableOpacity, Switch, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { login, register } from "@/api/auth";
+import { saveToken } from "@/utils/tokenStorage";
+import { router } from "expo-router";
+
+const Auth = () => {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
+
+ const handleLogin = async () => {
+    console.log({email, password})
+  try {
+    const data = await login({  email, password});
+    console.log(data)
+    await saveToken(data.token);
+    console.log(data);
+    const successMessage = data.message || "Registration successful! Please log in.";
+    setMessage(successMessage);
+    alert(successMessage);
+    router.replace("/(tabs)")
+
+  } catch (error: any) {
+    console.log(error);
+
+    const errorMessage =
+      error?.response?.data?.message || "Registration failed. Please try again.";
+
+    setMessage(errorMessage);
+    alert(errorMessage);
+  }
+};
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-lime-600">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Top */}
+        <View className="flex-row justify-between items-center px-6 pt-16">
+          <Ionicons onPress={()=>router.back()} name="chevron-back" size={24} color="white" />
+          <Text className="text-white">Need some help?</Text>
+        </View>
+
+        {/* Card */}
+        <View className="flex-1 bg-white mt-10 rounded-t-[40px] px-8 pt-8">
+
+          <Text className="text-3xl font-bold">Welcome back!</Text>
+          <Text className="text-gray-400 mt-2">
+            Login to your account to continue!
+          </Text>
+
+          
+
+          {/* Email */}
+          <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-4 mt-5">
+            <Ionicons name="mail-outline" size={20} color="gray" />
+            <TextInput
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              className="ml-3 flex-1"
+            />
+          </View>
+
+          
+          {/* Password */}
+          <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-4 mt-5">
+            <Ionicons name="lock-closed-outline" size={20} color="gray" />
+
+            <TextInput
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              className="ml-3 flex-1"
+            />
+
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? "eye-outline" : "eye-off-outline"}
+                size={20}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </View>
+
+
+
+          {/* Button */}
+          <TouchableOpacity
+            onPress={handleLogin}
+            className="bg-amber-400 py-4 rounded-full mt-8 items-center"
+          >
+            <Text className="text-white font-semibold text-lg">
+              SIGN IN
+            </Text>
+          </TouchableOpacity>
+
+          {/* Bottom */}
+          <View className="flex-row justify-center mt-6">
+            <Text className="text-gray-400">Don't have an account? </Text>
+            <Text onPress={()=>router.push('/(auth)/signup')} className="text-amber-500 font-semibold">Sign Up</Text>
+          </View>
+
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
+
+export default Auth;

@@ -22,6 +22,62 @@
       "when": 1773919278476,
       "tag": "0002_magenta_iron_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774343003626,
+      "tag": "0003_warm_pete_wisdom",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774348506779,
+      "tag": "0004_open_norrin_radd",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774350100245,
+      "tag": "0005_real_shiva",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1774462232343,
+      "tag": "0006_aberrant_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1774462375212,
+      "tag": "0007_mature_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774465996856,
+      "tag": "0008_steep_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1774466160930,
+      "tag": "0009_removed-long-lat",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1774466410201,
+      "tag": "0010_added-long-lat",
+      "breakpoints": true
     }
   ]
 }

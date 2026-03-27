@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { register } from "@/api/auth";
 import { saveToken } from "@/utils/tokenStorage";
+import { router } from "expo-router";
 
 const Auth = () => {
 
@@ -22,6 +23,7 @@ const Auth = () => {
     const successMessage = data.message || "Registration successful! Please log in.";
     setMessage(successMessage);
     alert(successMessage);
+    router.replace("/(tabs)")
 
   } catch (error: any) {
     console.log(error);
@@ -41,7 +43,7 @@ const Auth = () => {
       >
         {/* Top */}
         <View className="flex-row justify-between items-center px-6 pt-16">
-          <Ionicons name="chevron-back" size={24} color="white" />
+          <Ionicons onPress={()=>router.back()} name="chevron-back" size={24} color="white" />
           <Text className="text-white">Need some help?</Text>
         </View>
 
@@ -123,7 +125,7 @@ const Auth = () => {
           {/* Bottom */}
           <View className="flex-row justify-center mt-6">
             <Text className="text-gray-400">Already have an account? </Text>
-            <Text className="text-amber-500 font-semibold">Sign in</Text>
+            <Text onPress={()=>router.push('/(auth)/login')} className="text-amber-500 font-semibold">Sign in</Text>
           </View>
 
         </View>

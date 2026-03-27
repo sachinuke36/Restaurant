@@ -1,0 +1,1 @@
+ALTER TABLE "restaurants" ALTER COLUMN "description" SET DATA TYPE varchar;

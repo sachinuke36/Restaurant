@@ -1,0 +1,1 @@
+ALTER TABLE "categories" ADD COLUMN "img_url" varchar(255) NOT NULL;

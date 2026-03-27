@@ -1,0 +1,1 @@
+ALTER TABLE "categories" ADD COLUMN "public_id" varchar(255);
