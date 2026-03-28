@@ -1,21 +1,54 @@
-import * as SecureStore from "expo-secure-store";
+import { apiRequest } from "../../services/api";
 
+export const fetchAddress = () => {
+  return apiRequest("/api/users/address");
+};
 
-export const fetchAddress = async()=>{
-    try {
-        const token = await SecureStore.getItemAsync("auth_token");
+export const addAddress = (data: {
+  fullName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country?: string;
+  isDefault?: boolean;
+}) => {
+  return apiRequest("/api/users/address", {
+    method: "POST",
+    body: data,
+  });
+};
 
-        const res = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/users/address`,{
-            method: "GET",
-            headers:{
-                "Content-Type":"application/json",
-                Authorization: `Bearer ${token}`,
-            }
-        
-            
-        })
-        return await res.json();
-    } catch (error) {
-        console.log("Error in fetching user's address ",error);
-    }
-}
+export const updateAddress = (
+  id: number,
+  data: {
+    fullName?: string;
+    phone?: string;
+    addressLine1?: string;
+    addressLine2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+    isDefault?: boolean;
+  }
+) => {
+  return apiRequest(`/api/users/address/${id}`, {
+    method: "PUT",
+    body: data,
+  });
+};
+
+export const deleteAddress = (id: number) => {
+  return apiRequest(`/api/users/address/${id}`, {
+    method: "DELETE",
+  });
+};
+
+export const setDefaultAddress = (id: number) => {
+  return apiRequest(`/api/users/address/${id}/default`, {
+    method: "PATCH",
+  });
+};

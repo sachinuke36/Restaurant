@@ -4,9 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { Address } from "@/types/user";
 import { fetchAddress } from "@/api/user/address";
 import { router } from "expo-router";
+import { useCart } from "@/context/CartContext";
 
 const TopBar = () => {
   const [address, setAddress] = useState<Address | null>(null);
+  const { itemCount } = useCart();
 
   useEffect(() => {
     const getAddress = async () => {
@@ -47,8 +49,18 @@ const TopBar = () => {
       </TouchableOpacity>
 
       {/* Cart */}
-      <TouchableOpacity className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm">
+      <TouchableOpacity
+        onPress={() => router.push("/cart")}
+        className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm"
+      >
         <Ionicons name="cart-outline" size={24} color="#374151" />
+        {itemCount > 0 && (
+          <View className="absolute -top-1 -right-1 bg-orange-500 rounded-full w-5 h-5 items-center justify-center">
+            <Text className="text-white text-xs font-bold">
+              {itemCount > 9 ? "9+" : itemCount}
+            </Text>
+          </View>
+        )}
       </TouchableOpacity>
     </View>
   );

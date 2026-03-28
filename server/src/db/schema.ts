@@ -26,7 +26,9 @@ export const userRoleEnum = pgEnum("user_role", [
 
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
+  "confirmed",
   "preparing",
+  "ready",
   "out_for_delivery",
   "delivered",
   "cancelled",
@@ -97,7 +99,7 @@ export const addresses = pgTable(
   (table) => ({
     userAddressIndex: uniqueIndex("user_default_address")
       .on(table.userId)
-      .where(eq(table.isDefault, true)),
+      .where(sql`${table.isDefault} = true`),
   }),
 );
 

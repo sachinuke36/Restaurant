@@ -4,8 +4,10 @@ import { useUser } from "@/context/UserContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
-  const { user } = useUser();
+  const { user, loading } = useUser();
+  console.log(user?.role)
   const isAdmin = user?.role === "admin";
+  const isOwner = user?.role === "owner";
 
   const insets = useSafeAreaInsets();
 
@@ -62,10 +64,21 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
+        name="owner"
+        options={{
+          title: "My Restaurant",
+          href: !loading && isOwner ? "/owner" : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="storefront-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="admin"
         options={{
           title: "Admin",
-          href: isAdmin ? "/admin" : null,
+          href: !loading && isAdmin ? "/admin" : null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons
               name="shield-checkmark-outline"

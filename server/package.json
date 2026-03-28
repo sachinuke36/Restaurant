@@ -18,6 +18,7 @@
   "type": "commonjs",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@types/ws": "^8.18.1",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.6",
@@ -28,8 +29,10 @@
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
     "streamifier": "^0.1.1",
+    "stripe": "^21.0.1",
     "ts-node": "^10.9.2",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -38,6 +41,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
     "@types/streamifier": "^0.1.2",
+    "@types/stripe": "^8.0.416",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.21.0"
   }

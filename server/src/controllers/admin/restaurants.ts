@@ -7,7 +7,7 @@ import {
   restaurantsTable,
 } from "../../db/schema";
 import { uploadToCloudinary } from "../../services/cloudinary.service";
-import { eq } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 export const addRestaurant = async (req: Request, res: Response) => {
   try {
@@ -108,10 +108,51 @@ export const updateRestaurant = async (req: Request, res: Response) => {
 
 export const fetchRestaurants = async (req: Request, res: Response) => {
   try {
-    const restaurants = await db.select().from(restaurantsTable);
+    const categoryId = req.query.category as string;
+
+    let restaurants;
+
+    if (categoryId && categoryId !== "all") {
+      // Get restaurant IDs that have menu items in this category
+      const menuItemsWithCategory = await db
+        .select({ restaurant_id: menuItemsTable.restaurant_id })
+        .from(menuItemsTable)
+        .innerJoin(
+          menuItemCategoriesTable,
+          eq(menuItemCategoriesTable.menu_item_id, menuItemsTable.id)
+        )
+        .where(eq(menuItemCategoriesTable.category_id, Number(categoryId)));
+
+      const restaurantIds = [
+        ...new Set(menuItemsWithCategory.map((item) => item.restaurant_id)),
+      ];
+
+      if (restaurantIds.length === 0) {
+        return res.status(200).json({
+          message: "Restaurants fetched successfully",
+          restaurants: [],
+        });
+      }
+
+      restaurants = await db
+        .select()
+        .from(restaurantsTable)
+        .where(
+          and(
+            inArray(restaurantsTable.id, restaurantIds),
+            eq(restaurantsTable.is_active, true)
+          )
+        );
+    } else {
+      restaurants = await db
+        .select()
+        .from(restaurantsTable)
+        .where(eq(restaurantsTable.is_active, true));
+    }
+
     return res
       .status(200)
-      .json({ message: "All restaurants fetched successfully", restaurants });
+      .json({ message: "Restaurants fetched successfully", restaurants });
   } catch (error) {
     console.log(error);
 

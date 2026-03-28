@@ -21,7 +21,7 @@ app.use(cors({ origin: "*" }));
 app.use("/api/users", userRoutes);
 app.use("/api/admin", categoryRoutes )
 app.use("/api/admin/app", restaurantRoutes)
-app.use("/api/owner/restaurant", ownerRestaurantRoutes)
+app.use("/api/owner", ownerRestaurantRoutes)
 app.use("/api/admin", adminUserRoutes)
 
 app.listen(3000, "0.0.0.0", () => {

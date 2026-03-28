@@ -5,7 +5,7 @@ import Restaurants from "@/components/Home/Restaurants";
 import SearchBar from "@/components/Home/SearchBar";
 import TopBar from "@/components/Home/TopBar";
 import { Categories as CategoriesType } from "@/types/app";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +14,7 @@ export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<string | number>("all");
   const [search, setSearch] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchCategories = async () => {
     try {
@@ -34,8 +35,15 @@ export default function Index() {
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchCategories();
+    setRefreshKey((prev) => prev + 1);
     setRefreshing(false);
   };
+
+  const selectedCategoryName = useMemo(() => {
+    if (selectedCategory === "all") return null;
+    const cat = categories.find((c) => c.id === selectedCategory);
+    return cat?.name || null;
+  }, [selectedCategory, categories]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
@@ -69,7 +77,12 @@ export default function Index() {
         />
 
         {/* Restaurants */}
-        <Restaurants selectedCategory={selectedCategory} search={search} />
+        <Restaurants
+          selectedCategory={selectedCategory}
+          categoryName={selectedCategoryName}
+          search={search}
+          refreshKey={refreshKey}
+        />
       </ScrollView>
     </SafeAreaView>
   );

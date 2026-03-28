@@ -1,22 +1,26 @@
 export type Categories = {
-    id: string;
-    name: string;
-    img_url: string;
-    created_at: string;
-    updated_at: string
+  id: number | string;
+  name: string;
+  img_url: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type Restaurants = {
-   id: string;
+  id: number | string;
   name: string;
   address: string;
-  latitude: number;
-  longitude: number;
-  owner_id: string;
-  description: string;
-  image_url:string;
-  rating: number;
-  phone: number;
+  latitude?: number | null;
+  longitude?: number | null;
+  owner_id: number | string;
+  description?: string | null;
+  image_url?: string | null;
+  rating?: number | null;
+  phone: string;
+  is_open?: boolean;
+  is_active?: boolean;
+  delivery_time?: number | null;
+  delivery_fee?: string | null;
   created_at: string;
   updated_at: string;
 }

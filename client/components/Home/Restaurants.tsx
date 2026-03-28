@@ -14,12 +14,16 @@ import { router } from "expo-router";
 
 interface RestaurantsProps {
   selectedCategory?: string | number;
+  categoryName?: string | null;
   search?: string;
+  refreshKey?: number;
 }
 
 const Restaurants = ({
-  selectedCategory: _selectedCategory = "all",
+  selectedCategory = "all",
+  categoryName = null,
   search = "",
+  refreshKey = 0,
 }: RestaurantsProps) => {
   const [restaurantsData, setRestaurantsData] = useState<RestaurantsType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +32,7 @@ const Restaurants = ({
     const fetchRestaurants = async () => {
       try {
         setLoading(true);
-        const data = await getAllRestaurants();
+        const data = await getAllRestaurants(selectedCategory);
         setRestaurantsData(data.restaurants || []);
       } catch (error) {
         console.log("Error fetching restaurants:", error);
@@ -38,7 +42,7 @@ const Restaurants = ({
     };
 
     fetchRestaurants();
-  }, []);
+  }, [selectedCategory, refreshKey]);
 
   const filteredRestaurants = useMemo(() => {
     let filtered = restaurantsData;
@@ -69,7 +73,11 @@ const Restaurants = ({
       {/* Header */}
       <View className="flex-row items-center justify-between mb-4">
         <Text className="font-bold text-xl text-gray-700">
-          {search ? `Results for "${search}"` : "Open Restaurants"}
+          {search
+            ? `Results for "${search}"`
+            : categoryName
+            ? `${categoryName} Restaurants`
+            : "Open Restaurants"}
         </Text>
 
         <TouchableOpacity className="flex-row items-center">
@@ -109,14 +117,23 @@ const Restaurants = ({
                 className="bg-white rounded-2xl overflow-hidden"
               >
                 {/* Image */}
-                <Image
-                  source={{ uri: restaurant.image_url }}
-                  style={{
-                    width: "100%",
-                    height: 140,
-                  }}
-                  resizeMode="cover"
-                />
+                {restaurant.image_url ? (
+                  <Image
+                    source={{ uri: restaurant.image_url }}
+                    style={{
+                      width: "100%",
+                      height: 140,
+                    }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View
+                    style={{ width: "100%", height: 140 }}
+                    className="bg-gray-200 items-center justify-center"
+                  >
+                    <Ionicons name="restaurant" size={40} color="#9ca3af" />
+                  </View>
+                )}
 
                 {/* Info */}
                 <View className="p-3">
@@ -150,7 +167,9 @@ const Restaurants = ({
                         color="#9ca3af"
                       />
                       <Text className="text-gray-400 text-xs ml-1">
-                        20-30 min
+                        {restaurant.delivery_time
+                          ? `${restaurant.delivery_time} min`
+                          : "20-30 min"}
                       </Text>
                     </View>
                   </View>
