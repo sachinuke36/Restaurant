@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import { getToken } from "@/utils/tokenStorage";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -11,7 +11,7 @@ type RequestOptions = {
 
 export const apiRequest = async (endpoint: string, options: RequestOptions = {}) => {
   try {
-    const token = await SecureStore.getItemAsync("auth_token");
+    const token = await getToken();
 
     const headers: Record<string, string> = {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

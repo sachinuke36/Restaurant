@@ -12,28 +12,29 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
 
- const handleLogin = async () => {
-    console.log({email, password})
-  try {
-    const data = await login({  email, password});
-    console.log(data)
-    await saveToken(data.token);
-    console.log(data);
-    const successMessage = data.message || "Registration successful! Please log in.";
-    setMessage(successMessage);
-    alert(successMessage);
-    router.replace("/(tabs)")
+  const handleLogin = async () => {
+    console.log({ email, password });
+    try {
+      const data = await login({ email, password });
+      console.log(data);
 
-  } catch (error: any) {
-    console.log(error);
+      if (!data.token) {
+        throw new Error(data.message || "Login failed. No token received.");
+      }
 
-    const errorMessage =
-      error?.response?.data?.message || "Registration failed. Please try again.";
-
-    setMessage(errorMessage);
-    alert(errorMessage);
-  }
-};
+      await saveToken(data.token);
+      const successMessage = data.message || "Login successful!";
+      setMessage(successMessage);
+      alert(successMessage);
+      router.replace("/(tabs)");
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage =
+        error?.message || "Login failed. Please try again.";
+      setMessage(errorMessage);
+      alert(errorMessage);
+    }
+  };
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1 bg-lime-600">
       <ScrollView
