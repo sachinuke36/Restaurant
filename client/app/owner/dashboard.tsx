@@ -149,7 +149,7 @@ export default function OwnerDashboard() {
               </View>
             )}
             <View className="flex-1 ml-3">
-              <Text className="text-xl font-bold" numberOfLines={1}>{restaurant.name}</Text>
+              <Text className="text-xl font-bold text-orange-500" numberOfLines={1}>{restaurant.name}</Text>
               <Text className="text-gray-500 text-sm" numberOfLines={1}>
                 {restaurant.address}
               </Text>

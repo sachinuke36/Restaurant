@@ -14,7 +14,7 @@ const BackButton = ({ absolute = false }: BackButtonProps) => {
         onPress={() => router.back()}
         className="absolute top-12 left-4 z-10 w-10 h-10 bg-white rounded-full items-center justify-center shadow-md"
       >
-        <Ionicons name="arrow-back" size={24} color="#374151" />
+        <Ionicons name="arrow-back" size={24} color="#f97316" />
       </TouchableOpacity>
     );
   }
@@ -22,9 +22,9 @@ const BackButton = ({ absolute = false }: BackButtonProps) => {
   return (
     <TouchableOpacity
       onPress={() => router.back()}
-      className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
+      className="w-10 h-10 bg-orange-50 rounded-full items-center justify-center"
     >
-      <Ionicons name="arrow-back" size={22} color="#374151" />
+      <Ionicons name="arrow-back" size={22} color="#f97316" />
     </TouchableOpacity>
   );
 }

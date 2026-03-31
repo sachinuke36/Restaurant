@@ -55,6 +55,7 @@ export default function RootLayout() {
               <Stack.Screen name="profile" />
               <Stack.Screen name="owner" />
               <Stack.Screen name="admin" />
+              <Stack.Screen name="delivery" />
             </>
           ) : (
             <Stack.Screen name="(auth)" />

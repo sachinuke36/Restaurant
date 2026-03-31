@@ -158,7 +158,7 @@ export default function OwnerOrders() {
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
         <BackButton />
-        <Text className="text-xl font-bold ml-4">Orders</Text>
+        <Text className="text-xl font-bold ml-4 text-orange-500">Orders</Text>
       </View>
 
       {/* Filter Tabs */}

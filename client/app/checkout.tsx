@@ -105,7 +105,7 @@ export default function CheckoutScreen() {
       <SafeAreaView className="flex-1 bg-white">
         <View className="px-4 py-3 flex-row items-center border-b border-gray-100">
           <BackButton />
-          <Text className="text-xl font-bold ml-4">Checkout</Text>
+          <Text className="text-xl font-bold ml-4 text-orange-500">Checkout</Text>
         </View>
         <View className="flex-1 items-center justify-center px-6">
           <Ionicons name="cart-outline" size={80} color="#d1d5db" />
@@ -130,7 +130,7 @@ export default function CheckoutScreen() {
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
         <BackButton />
-        <Text className="text-xl font-bold ml-4">Checkout</Text>
+        <Text className="text-xl font-bold ml-4 text-orange-500">Checkout</Text>
       </View>
 
       <ScrollView className="flex-1">

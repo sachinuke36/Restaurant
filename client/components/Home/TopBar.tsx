@@ -1,31 +1,40 @@
 import { Text, View, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Address } from "@/types/user";
 import { fetchAddress } from "@/api/user/address";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCart } from "@/context/CartContext";
 
-const TopBar = () => {
+type TopBarProps = {
+  refreshKey?: number;
+};
+
+const TopBar = ({ refreshKey = 0 }: TopBarProps) => {
   const [address, setAddress] = useState<Address | null>(null);
   const { itemCount } = useCart();
 
-  useEffect(() => {
-    const getAddress = async () => {
-      try {
-        const res = await fetchAddress();
-        if (res?.address && res.address.length > 0) {
-          // Find default address or use first one
-          const defaultAddr = res.address.find((a: Address) => a.isDefault);
-          setAddress(defaultAddr || res.address[0]);
-        }
-      } catch (error) {
-        console.log("Error fetching address:", error);
+  const getAddress = useCallback(async () => {
+    try {
+      const res = await fetchAddress();
+      if (res?.address && res.address.length > 0) {
+        // Find default address or use first one
+        const defaultAddr = res.address.find((a: Address) => a.isDefault);
+        setAddress(defaultAddr || res.address[0]);
+      } else {
+        setAddress(null);
       }
-    };
-
-    getAddress();
+    } catch (error) {
+      console.log("Error fetching address:", error);
+    }
   }, []);
+
+  // Refetch address when screen is focused or refreshKey changes
+  useFocusEffect(
+    useCallback(() => {
+      getAddress();
+    }, [getAddress, refreshKey])
+  );
 
   return (
     <View className="flex-row justify-between items-center py-2 mt-10">

@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   const { user, loading } = useUser();
-  console.log(user?.role)
+
   const isAdmin = user?.role === "admin";
   const isOwner = user?.role === "owner";
+  const isDeliveryPerson = user?.role === "delivery_person";
+  const isCustomer = user?.role === "customer" || (!isAdmin && !isOwner && !isDeliveryPerson);
 
   const insets = useSafeAreaInsets();
 
@@ -33,10 +35,12 @@ export default function TabsLayout() {
         },
       }}
     >
+      {/* Customer tabs */}
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
+          href: !loading && isCustomer ? "/" : null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -47,12 +51,14 @@ export default function TabsLayout() {
         name="orders"
         options={{
           title: "Orders",
+          href: !loading && isCustomer ? "/orders" : null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt-outline" size={size} color={color} />
           ),
         }}
       />
 
+      {/* Profile tab - visible to all */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -63,6 +69,19 @@ export default function TabsLayout() {
         }}
       />
 
+      {/* Delivery person tab */}
+      <Tabs.Screen
+        name="delivery"
+        options={{
+          title: "Deliveries",
+          href: !loading && isDeliveryPerson ? "/delivery" : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bicycle-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* Owner tab */}
       <Tabs.Screen
         name="owner"
         options={{
@@ -74,6 +93,7 @@ export default function TabsLayout() {
         }}
       />
 
+      {/* Admin tab */}
       <Tabs.Screen
         name="admin"
         options={{

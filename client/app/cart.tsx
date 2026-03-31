@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCart } from "@/context/CartContext";
+import BackButton from "@/components/common/BackButton";
 
 export default function CartScreen() {
   const { cart, loading, itemCount, addToCart, removeFromCart, clearCartItems } = useCart();
@@ -27,13 +28,8 @@ export default function CartScreen() {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="px-4 py-3 flex-row items-center border-b border-gray-100">
-          <TouchableOpacity
-                            onPress={() => router.back()}
-                            className="m-2 w-10 h-10 bg-white rounded-full items-center justify-center shadow-md"
-                          >
-                            <Ionicons name="arrow-back" size={24} color="#374151" />
-              </TouchableOpacity>
-          <Text className="text-xl font-bold ml-4">Your Cart</Text>
+          <BackButton />
+          <Text className="text-xl font-bold ml-4 text-orange-500">Your Cart</Text>
         </View>
         <View className="flex-1 items-center justify-center px-6">
           <Ionicons name="cart-outline" size={80} color="#d1d5db" />
@@ -64,14 +60,9 @@ export default function CartScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
-        <TouchableOpacity
-                          onPress={() => router.back()}
-                          className="m-2 w-10 h-10 bg-white rounded-full items-center justify-center shadow-md"
-                        >
-                          <Ionicons name="arrow-back" size={24} color="#374151" />
-                        </TouchableOpacity>
+        <BackButton />
         <View className="ml-4">
-          <Text className="text-xl font-bold">Your Cart</Text>
+          <Text className="text-xl font-bold text-orange-500">Your Cart</Text>
           <Text className="text-gray-500 text-sm">{itemCount} items</Text>
         </View>
       </View>

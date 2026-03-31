@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { router, useFocusEffect } from "expo-router";
 import { getAllUsers } from "@/api/admin";
 import { User } from "@/types/user";
 
@@ -26,18 +29,32 @@ const getRoleColor = (role: string) => {
 export default function UsersManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadUsers = async () => {
+    try {
+      const data = await getAllUsers();
+      setUsers(data?.users || []);
+    } catch (error) {
+      console.log("Error loading users:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await getAllUsers();
-        setUsers(data?.users || []);
-      } catch (error) {
-        console.log("Error loading users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    loadUsers();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadUsers();
+    }, [])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
     loadUsers();
   }, []);
 
@@ -58,7 +75,7 @@ export default function UsersManagement() {
             <Text className="text-2xl font-bold text-gray-800">
               {users.length}
             </Text>
-            <Text className="text-gray-500 text-sm">Total Users</Text>
+            <Text className="text-gray-500 text-sm">Total</Text>
           </View>
           <View className="items-center">
             <Text className="text-2xl font-bold text-green-500">
@@ -72,12 +89,36 @@ export default function UsersManagement() {
             </Text>
             <Text className="text-gray-500 text-sm">Owners</Text>
           </View>
+          <View className="items-center">
+            <Text className="text-2xl font-bold text-blue-500">
+              {users.filter((u) => u.role === "delivery_person").length}
+            </Text>
+            <Text className="text-gray-500 text-sm">Delivery</Text>
+          </View>
         </View>
+
+        {/* Add Delivery Partner Button */}
+        <TouchableOpacity
+          onPress={() => router.push("/admin/add-delivery-partner")}
+          className="flex-row items-center justify-center bg-orange-500 py-3 rounded-xl mb-4"
+        >
+          <Ionicons name="add-circle-outline" size={24} color="white" />
+          <Text className="text-white font-bold text-base ml-2">
+            Add Delivery Partner
+          </Text>
+        </TouchableOpacity>
 
         {/* Users List */}
         <FlatList
           data={users}
           keyExtractor={(item) => item.id.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#f97316"
+            />
+          }
           renderItem={({ item }) => (
             <View className="flex-row items-center bg-gray-50 p-4 rounded-xl mb-3">
               <View className="w-12 h-12 bg-orange-100 rounded-full items-center justify-center">

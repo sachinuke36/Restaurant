@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { getMyRestaurants } from "@/api/owner/restaurant";
+import { useUser } from "@/context/UserContext";
+import { deleteToken } from "@/utils/tokenStorage";
 
 type Restaurant = {
   id: number;
@@ -23,6 +26,7 @@ type Restaurant = {
 };
 
 export default function OwnerRestaurantList() {
+  const { clearUser } = useUser();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +52,21 @@ export default function OwnerRestaurantList() {
     loadRestaurants();
   }, []);
 
+  const handleLogout = async () => {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          await deleteToken();
+          clearUser();
+          router.replace("/(auth)");
+        },
+      },
+    ]);
+  };
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-white items-center justify-center">
@@ -62,16 +81,16 @@ export default function OwnerRestaurantList() {
       <View className="bg-white px-4 py-4 border-b border-gray-100">
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-2xl font-bold">My Restaurants</Text>
+            <Text className="text-2xl font-bold text-orange-500">My Restaurants</Text>
             <Text className="text-gray-500 mt-1">
               Select a restaurant to manage
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => router.push("/(tabs)")}
-            className="bg-gray-100 p-2 rounded-full"
+            onPress={handleLogout}
+            className="bg-red-50 p-3 rounded-full"
           >
-            <Ionicons name="home-outline" size={24} color="#374151" />
+            <Ionicons name="log-out-outline" size={24} color="#ef4444" />
           </TouchableOpacity>
         </View>
       </View>

@@ -106,3 +106,33 @@ export const getAllUsers = async () => {
     throw error;
   }
 };
+
+export const createDeliveryPerson = async (data: {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}) => {
+  try {
+    const token = await SecureStore.getItemAsync("auth_token");
+    const res = await fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/admin/users/delivery-person`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.message || "Failed to create delivery person");
+    }
+    return result;
+  } catch (error) {
+    console.log("Error creating delivery person:", error);
+    throw error;
+  }
+};

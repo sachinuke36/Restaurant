@@ -88,12 +88,12 @@ export default function AddressesScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["bottom"]}>
+    <SafeAreaView className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center justify-between border-b border-gray-100">
         <View className="flex-row items-center">
           <BackButton />
-          <Text className="text-xl font-bold ml-4">My Addresses</Text>
+          <Text className="text-xl font-bold ml-4 text-orange-500">My Addresses</Text>
         </View>
         <TouchableOpacity
           onPress={() => router.push("/profile/add-address")}

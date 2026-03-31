@@ -119,7 +119,7 @@ export default function MenuManagement() {
       <View className="bg-white px-4 py-3 flex-row items-center justify-between border-b border-gray-100">
         <View className="flex-row items-center">
           <BackButton />
-          <Text className="text-xl font-bold ml-4">Menu Items</Text>
+          <Text className="text-xl font-bold ml-4 text-orange-500">Menu Items</Text>
         </View>
         <TouchableOpacity
           onPress={() =>

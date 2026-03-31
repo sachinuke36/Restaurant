@@ -1,18 +1,25 @@
-import { View, Text, TextInput, TouchableOpacity, Switch, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Switch, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { login, register } from "@/api/auth";
 import { saveToken } from "@/utils/tokenStorage";
 import { router } from "expo-router";
+import { useUser } from "@/context/UserContext";
+import { useCart } from "@/context/CartContext";
 
 const Auth = () => {
+  const { refetchUser } = useUser();
+  const { refetchCart } = useCart();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (loading) return;
+    setLoading(true);
     console.log({ email, password });
     try {
       const data = await login({ email, password });
@@ -23,6 +30,10 @@ const Auth = () => {
       }
 
       await saveToken(data.token);
+
+      // Refetch user and cart data now that we have a valid token
+      await Promise.all([refetchUser(), refetchCart()]);
+
       const successMessage = data.message || "Login successful!";
       setMessage(successMessage);
       alert(successMessage);
@@ -33,6 +44,8 @@ const Auth = () => {
         error?.message || "Login failed. Please try again.";
       setMessage(errorMessage);
       alert(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -95,11 +108,16 @@ const Auth = () => {
           {/* Button */}
           <TouchableOpacity
             onPress={handleLogin}
-            className="bg-amber-400 py-4 rounded-full mt-8 items-center"
+            disabled={loading}
+            className={`py-4 rounded-full mt-8 items-center ${loading ? 'bg-amber-300' : 'bg-amber-400'}`}
           >
-            <Text className="text-white font-semibold text-lg">
-              SIGN IN
-            </Text>
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-white font-semibold text-lg">
+                SIGN IN
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Bottom */}

@@ -120,7 +120,7 @@ export default function OrderDetailsScreen() {
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
         <BackButton />
         <View className="ml-4">
-          <Text className="text-xl font-bold">Order #{order.id}</Text>
+          <Text className="text-xl font-bold text-orange-500">Order #{order.id}</Text>
           <Text className="text-gray-500 text-sm">{formatDate(order.created_at)}</Text>
         </View>
       </View>

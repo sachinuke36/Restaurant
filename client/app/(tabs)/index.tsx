@@ -4,17 +4,33 @@ import Greet from "@/components/Home/Greet";
 import Restaurants from "@/components/Home/Restaurants";
 import SearchBar from "@/components/Home/SearchBar";
 import TopBar from "@/components/Home/TopBar";
+import { useUser } from "@/context/UserContext";
 import { Categories as CategoriesType } from "@/types/app";
+import { Redirect } from "expo-router";
 import { useEffect, useState, useMemo } from "react";
 import { ScrollView, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
+  const { user, loading } = useUser();
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | number>("all");
   const [search, setSearch] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Redirect non-customer users to their respective dashboards
+  if (!loading && user) {
+    if (user.role === "admin") {
+      return <Redirect href="/admin" />;
+    }
+    if (user.role === "owner") {
+      return <Redirect href="/owner" />;
+    }
+    if (user.role === "delivery_person") {
+      return <Redirect href="/delivery" />;
+    }
+  }
 
   const fetchCategories = async () => {
     try {
@@ -61,7 +77,7 @@ export default function Index() {
         }
       >
         {/* Top bar */}
-        <TopBar />
+        <TopBar refreshKey={refreshKey} />
 
         {/* Greeting */}
         <Greet />

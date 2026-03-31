@@ -11,7 +11,8 @@ export default function ProfileLayout() {
         },
       }}
     >
-      <Stack.Screen name="addresses" options={{ title: "My Addresses" }} />
+      <Stack.Screen name="addresses" options={{ headerShown: false }} />
+      <Stack.Screen name="add-address" options={{ headerShown: false }} />
       <Stack.Screen name="orders" options={{ title: "Order History" }} />
       <Stack.Screen name="favorites" options={{ title: "Favorites" }} />
       <Stack.Screen name="settings" options={{ title: "Settings" }} />

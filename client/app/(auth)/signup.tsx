@@ -1,11 +1,15 @@
-import { View, Text, TextInput, TouchableOpacity, Switch, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Switch, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { register } from "@/api/auth";
 import { saveToken } from "@/utils/tokenStorage";
 import { router } from "expo-router";
+import { useUser } from "@/context/UserContext";
+import { useCart } from "@/context/CartContext";
 
 const Auth = () => {
+  const { refetchUser } = useUser();
+  const { refetchCart } = useCart();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -13,8 +17,11 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
       const data = await register({ name, email, password, phone: Number(phone) });
       console.log(data);
@@ -24,6 +31,10 @@ const Auth = () => {
       }
 
       await saveToken(data.token);
+
+      // Refetch user and cart data now that we have a valid token
+      await Promise.all([refetchUser(), refetchCart()]);
+
       const successMessage = data.message || "Registration successful!";
       setMessage(successMessage);
       alert(successMessage);
@@ -34,6 +45,8 @@ const Auth = () => {
         error?.message || "Registration failed. Please try again.";
       setMessage(errorMessage);
       alert(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -116,11 +129,16 @@ const Auth = () => {
           {/* Button */}
           <TouchableOpacity
             onPress={handleSignup}
-            className="bg-amber-400 py-4 rounded-full mt-8 items-center"
+            disabled={loading}
+            className={`py-4 rounded-full mt-8 items-center ${loading ? 'bg-amber-300' : 'bg-amber-400'}`}
           >
-            <Text className="text-white font-semibold text-lg">
-              SIGN UP
-            </Text>
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-white font-semibold text-lg">
+                SIGN UP
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Bottom */}

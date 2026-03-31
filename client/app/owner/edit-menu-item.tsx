@@ -136,7 +136,7 @@ export default function EditMenuItemScreen() {
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
         <BackButton />
-        <Text className="text-xl font-bold ml-4">Edit Menu Item</Text>
+        <Text className="text-xl font-bold ml-4 text-orange-500">Edit Menu Item</Text>
       </View>
 
       <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">

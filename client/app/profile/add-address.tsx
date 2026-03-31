@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
+import * as Location from "expo-location";
 import { addAddress, updateAddress, fetchAddress } from "@/api/user/address";
 import BackButton from "@/components/common/BackButton";
 
@@ -21,6 +22,7 @@ export default function AddAddressScreen() {
 
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
+  const [fetchingLocation, setFetchingLocation] = useState(false);
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -31,6 +33,8 @@ export default function AddAddressScreen() {
     postalCode: "",
     country: "India",
     isDefault: false,
+    latitude: "",
+    longitude: "",
   });
 
   useEffect(() => {
@@ -54,12 +58,64 @@ export default function AddAddressScreen() {
           postalCode: address.postalCode || "",
           country: address.country || "India",
           isDefault: address.isDefault || false,
+          latitude: address.latitude || "",
+          longitude: address.longitude || "",
         });
       }
     } catch (error) {
       console.log("Error loading address:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    setFetchingLocation(true);
+    try {
+      // Request permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Denied",
+          "Please enable location permissions in your device settings to use this feature."
+        );
+        return;
+      }
+
+      // Get current position
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      const { latitude, longitude } = location.coords;
+
+      // Reverse geocode to get address
+      const [address] = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+
+      if (address) {
+        setForm((prev) => ({
+          ...prev,
+          addressLine1: [address.streetNumber, address.street]
+            .filter(Boolean)
+            .join(" ") || prev.addressLine1,
+          addressLine2: address.district || address.subregion || prev.addressLine2,
+          city: address.city || address.subregion || prev.city,
+          state: address.region || prev.state,
+          postalCode: address.postalCode || prev.postalCode,
+          country: address.country || "India",
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+        }));
+        Alert.alert("Success", "Location fetched! Please verify and complete the address.");
+      }
+    } catch (error) {
+      console.log("Error getting location:", error);
+      Alert.alert("Error", "Failed to get current location. Please try again.");
+    } finally {
+      setFetchingLocation(false);
     }
   };
 
@@ -118,13 +174,31 @@ export default function AddAddressScreen() {
       {/* Header */}
       <View className="bg-white px-4 py-3 flex-row items-center border-b border-gray-100">
         <BackButton />
-        <Text className="text-xl font-bold ml-4">
+        <Text className="text-xl font-bold ml-4 text-orange-500">
           {isEditing ? "Edit Address" : "Add Address"}
         </Text>
       </View>
 
       <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
         <View className="p-4">
+          {/* Use Current Location Button */}
+          <TouchableOpacity
+            onPress={getCurrentLocation}
+            disabled={fetchingLocation}
+            className="flex-row items-center justify-center bg-orange-50 border border-orange-200 rounded-xl py-3 mb-4"
+          >
+            {fetchingLocation ? (
+              <ActivityIndicator size="small" color="#f97316" />
+            ) : (
+              <>
+                <Ionicons name="locate" size={20} color="#f97316" />
+                <Text className="text-orange-500 font-medium ml-2">
+                  Use My Current Location
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+
           {/* Full Name */}
           <View className="mb-4">
             <Text className="text-gray-700 font-medium mb-2">Full Name *</Text>
