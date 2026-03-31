@@ -6,6 +6,9 @@ import { isTokenExpired } from "@/utils/checktoken";
 import { View, ActivityIndicator } from "react-native";
 import { UserProvider } from "@/context/UserContext";
 import { CartProvider } from "@/context/CartContext";
+import { StripeProvider } from "@stripe/stripe-react-native";
+
+const STRIPE_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 
 export default function RootLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -41,27 +44,32 @@ export default function RootLayout() {
   }
 
   return (
-    <UserProvider>
-      <CartProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          {isLoggedIn ? (
-            <>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="restaurant/[id]" />
-              <Stack.Screen name="cart" />
-              <Stack.Screen name="checkout" />
-              <Stack.Screen name="order-confirmation" />
-              <Stack.Screen name="order/[id]" />
-              <Stack.Screen name="profile" />
-              <Stack.Screen name="owner" />
-              <Stack.Screen name="admin" />
-              <Stack.Screen name="delivery" />
-            </>
-          ) : (
-            <Stack.Screen name="(auth)" />
-          )}
-        </Stack>
-      </CartProvider>
-    </UserProvider>
+    <StripeProvider
+      publishableKey={STRIPE_PUBLISHABLE_KEY}
+      merchantIdentifier="merchant.com.sachinuke36.client"
+    >
+      <UserProvider>
+        <CartProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            {isLoggedIn ? (
+              <>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="restaurant/[id]" />
+                <Stack.Screen name="cart" />
+                <Stack.Screen name="checkout" />
+                <Stack.Screen name="order-confirmation" />
+                <Stack.Screen name="order/[id]" />
+                <Stack.Screen name="profile" />
+                <Stack.Screen name="owner" />
+                <Stack.Screen name="admin" />
+                <Stack.Screen name="delivery" />
+              </>
+            ) : (
+              <Stack.Screen name="(auth)" />
+            )}
+          </Stack>
+        </CartProvider>
+      </UserProvider>
+    </StripeProvider>
   );
 }

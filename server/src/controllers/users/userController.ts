@@ -966,9 +966,14 @@ export const cancelOrder = async (req: AuthRequest, res: Response) => {
 export const createPaymentIntent = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
+    const { address_id } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized!" });
+    }
+
+    if (!address_id) {
+      return res.status(400).json({ message: "Address is required" });
     }
 
     // Get user's cart to calculate amount
@@ -1007,14 +1012,24 @@ export const createPaymentIntent = async (req: AuthRequest, res: Response) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100),
       currency: "inr",
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         user_id: userId.toString(),
         cart_id: cart.id.toString(),
+        address_id: address_id.toString(),
+        restaurant_id: cart.restaurant_id.toString(),
+        subtotal: subtotal.toString(),
+        delivery_fee: deliveryFee.toString(),
+        tax: tax.toString(),
+        total_amount: totalAmount.toString(),
       },
     });
 
     return res.json({
       clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
       amount: totalAmount,
     });
 

@@ -214,6 +214,8 @@ export const ordersTable = pgTable("orders", {
   address_id: integer("address_id")
   .notNull()
   .references(()=>addresses.id),
+  payment_intent_id: varchar("payment_intent_id", { length: 255 }),
+  payment_method: paymentMethodEnum("payment_method").default("cash"),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });

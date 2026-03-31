@@ -8,12 +8,17 @@ import restaurantRoutes from './routes/restaurants.route'
 import ownerRestaurantRoutes from './routes/owner.restaurants.route'
 import adminUserRoutes from './routes/admin.users.route'
 import deliveryRoutes from './routes/delivery.route'
+import webhookRoutes from './routes/webhookRoutes'
 
 dotenv.config();
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+// Webhook route must be registered BEFORE express.json() middleware
+// because Stripe webhooks require the raw body for signature verification
+app.use("/api/webhook", webhookRoutes);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

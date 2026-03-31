@@ -12,14 +12,48 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCart } from "@/context/CartContext";
 import { fetchAddress } from "@/api/user/address";
-import { placeOrder } from "@/api/user/orders";
+import { placeOrder, getMyOrders } from "@/api/user/orders";
+import { createPaymentIntent } from "@/api/user/payments";
 import { Address } from "@/types/user";
 import BackButton from "@/components/common/BackButton";
+import { useStripe } from "@stripe/stripe-react-native";
 
 type PaymentMethod = "cash" | "card" | "upi";
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function pollForNewOrder(
+  previousOrderIds: Set<number>,
+  maxAttempts = 10,
+  intervalMs = 2000
+): Promise<number | null> {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const response = await getMyOrders();
+      const orders = response.orders || [];
+
+      // Find an order that wasn't in the previous set
+      const newOrder = orders.find((order: { id: number }) => !previousOrderIds.has(order.id));
+
+      if (newOrder) {
+        return newOrder.id;
+      }
+    } catch (error) {
+      console.log("Polling attempt failed:", error);
+    }
+
+    // Wait before next attempt (skip wait on last attempt)
+    if (attempt < maxAttempts - 1) {
+      await sleep(intervalMs);
+    }
+  }
+
+  return null;
+}
+
 export default function CheckoutScreen() {
   const { cart, clearLocalCart } = useCart();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
@@ -46,31 +80,96 @@ export default function CheckoutScreen() {
     }
   };
 
-  const handlePlaceOrder = async () => {
+  const handleCardPayment = async () => {
     if (!selectedAddress) {
       Alert.alert("Error", "Please select a delivery address");
-      return;
-    }
-
-    if (!cart) {
-      Alert.alert("Error", "Your cart is empty");
-      return;
-    }
-
-    // For card/UPI, show coming soon message (requires development build for Stripe)
-    if (paymentMethod === "card" || paymentMethod === "upi") {
-      Alert.alert(
-        "Coming Soon",
-        "Online payment will be available soon. Please use Cash on Delivery for now.",
-        [{ text: "OK" }]
-      );
       return;
     }
 
     setPlacing(true);
 
     try {
-      // Place the order
+      // Get existing order IDs before payment to detect new orders
+      const existingOrdersResponse = await getMyOrders();
+      const existingOrderIds = new Set<number>(
+        (existingOrdersResponse.orders || []).map((o: { id: number }) => o.id)
+      );
+
+      // Step 1: Create payment intent
+      const { clientSecret } = await createPaymentIntent(selectedAddress.id);
+
+      // Step 2: Initialize payment sheet
+      const { error: initError } = await initPaymentSheet({
+        paymentIntentClientSecret: clientSecret,
+        merchantDisplayName: "Restaurant App",
+        defaultBillingDetails: {
+          address: {
+            country: "IN",
+          },
+        },
+      });
+
+      if (initError) {
+        Alert.alert("Error", initError.message);
+        setPlacing(false);
+        return;
+      }
+
+      // Step 3: Present payment sheet
+      const { error: paymentError } = await presentPaymentSheet();
+
+      if (paymentError) {
+        if (paymentError.code === "Canceled") {
+          // User cancelled, do nothing
+        } else {
+          Alert.alert("Payment Failed", paymentError.message);
+        }
+        setPlacing(false);
+        return;
+      }
+
+      // Step 4: Payment successful - webhook will create the order
+      // Clear local cart
+      clearLocalCart();
+
+      // Poll for the new order created by webhook
+      const newOrderId = await pollForNewOrder(existingOrderIds);
+
+      if (newOrderId) {
+        router.replace({
+          pathname: "/order-confirmation",
+          params: { orderId: newOrderId },
+        });
+      } else {
+        // Order not found after polling - show message and navigate to orders
+        Alert.alert(
+          "Order Processing",
+          "Your payment was successful! Your order is being processed and will appear in your orders shortly.",
+          [
+            {
+              text: "View Orders",
+              onPress: () => router.replace("/(tabs)/orders"),
+            },
+          ]
+        );
+      }
+
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Something went wrong");
+      setPlacing(false);
+    }
+  };
+
+  const handleCashPayment = async () => {
+    if (!selectedAddress) {
+      Alert.alert("Error", "Please select a delivery address");
+      return;
+    }
+
+    setPlacing(true);
+
+    try {
+      // Place the order directly for COD
       const response = await placeOrder({ address_id: selectedAddress.id });
 
       if (response.order) {
@@ -89,6 +188,31 @@ export default function CheckoutScreen() {
       Alert.alert("Error", error.message || "Something went wrong");
     } finally {
       setPlacing(false);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!selectedAddress) {
+      Alert.alert("Error", "Please select a delivery address");
+      return;
+    }
+
+    if (!cart) {
+      Alert.alert("Error", "Your cart is empty");
+      return;
+    }
+
+    if (paymentMethod === "card") {
+      await handleCardPayment();
+    } else if (paymentMethod === "upi") {
+      // UPI can be added later with Stripe's UPI payment method
+      Alert.alert(
+        "Coming Soon",
+        "UPI payment will be available soon. Please use Card or Cash on Delivery.",
+        [{ text: "OK" }]
+      );
+    } else {
+      await handleCashPayment();
     }
   };
 

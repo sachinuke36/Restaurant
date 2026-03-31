@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sachinuke36.client"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +20,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sachinuke36.client"
     },
     "web": {
       "output": "static",
@@ -40,7 +42,14 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.sachinuke36.client",
+          "enableGooglePay": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
