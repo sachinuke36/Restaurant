@@ -518,4 +518,27 @@ cd server
 npm test
 ```
 
+---
+
+## 🎥 Demo Videos
+
+### 1️⃣ User (Customer) App Demo
+Watch how customers browse restaurants, add items to cart, and place orders.
+
+[Watch Video](https://drive.google.com/file/d/1jI39Nh_b-xafTjvZ0E19L3xsewu3d8KP/view)
+
+---
+
+### 2️⃣ Owner Dashboard Demo
+See how restaurant owners manage menus and handle incoming orders.
+
+[Watch Video](https://drive.google.com/file/d/1Gk9K8dKJAbEO4PZ9kdhbTSOXYKWqsiPj/view)
+
+---
+
+### 3️⃣ Delivery Partner Demo
+Watch how delivery partners pick up orders and complete deliveries.
+
+[Open Demo Folder](https://drive.google.com/drive/folders/11NL3aq5gmPJyDgVcqHgrb9FBv7BnsuOb)
+
 
